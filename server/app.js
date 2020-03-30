@@ -39,7 +39,8 @@ let redisPass = 'zEHTAAn2Qfnad4HlvHZhu0q6kbE2FfYd';
 
 if (process.env.REDISVLOUD_URL) {
   redisURL = url.parse(process.env.REDISVLOUD_URL);
-  redisPass = redisURL.auth.split(':')[1];
+  const passIndex = 1;
+  redisPass = redisURL.auth.split(':')[passIndex];
 }
 
 const redisClient = redis.createClient({
