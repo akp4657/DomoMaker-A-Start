@@ -65,8 +65,6 @@ const ChangeWindow = (props) => {
             method="POST"
             className="mainForm"
         >
-        <label htmlFor="username">Username: </label>
-        <input id="user" type="text" name="username" placeholder="username"/>
         <label htmlFor="pass">Password: </label>
         <input id="pass" type="password" name="pass" placeholder="old password"/>
         <label htmlFor="pass2">Password: </label>

@@ -43,7 +43,7 @@ const passChange = (request, response) => {
   req.body.pass = `${req.body.pass}`;
   req.body.pass2 = `${req.body.pass2}`;
 
-   if (!req.body.username || !req.body.pass || !req.body.pass2) {
+   if ( !req.body.pass || !req.body.pass2) {
     return res.status(400).json({ error: 'RAWR! All fields are required!' });
   }
 
@@ -51,10 +51,10 @@ const passChange = (request, response) => {
     return res.status(400).json({ error: 'RAWR! Passwords cannot be the same!' });
   } 
 
-  // Check to see if the user actually exists
-  return Account.AccountModel.authenticate(req.body.username, req.body.pass, (err, account) => {
+  // Check to see if the initial password was correct in the first place
+  return Account.AccountModel.authenticate(req.session.account.username, req.body.pass, (err, account) => {
     if (err || !account) {
-      return res.status(401).json({ error: 'This account does not exist' });
+      return res.status(401).json({ error: 'Incorrect Password' });
     }
 
     // If they do, make a new hash for it with the newPassword
