@@ -35,6 +35,7 @@ const handleSignup = (e) => {
     return false;
 };
 
+
 const LoginWindow = (props) => {
     return ( 
     <form id="loginForm" name="loginForm"
@@ -75,6 +76,7 @@ const SignupWindow = (props) => {
     );
 };
 
+
 const createLoginWindow = (csrf) => {
     ReactDOM.render(
         <LoginWindow csrf={csrf} />,
@@ -88,6 +90,7 @@ const createSignupWindow = (csrf) => {
         document.querySelector("#content")
     );
 };
+
 
 const setup = (csrf) => {
     const loginButton = document.querySelector("#loginButton");

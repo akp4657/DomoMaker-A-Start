@@ -17,6 +17,26 @@ const handleDomo = (e) => {
     return false;
 };
 
+const handleChange = (e) => {
+    e.preventDefault();
+
+    $("#domoMessage").animate({width: 'hide'}, 350);
+
+    if($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() =='') {
+        handleError("RAWR! All fields are required!");
+        return false;
+    }
+
+    if($("#pass").val() === $("#pass2").val()) {
+        handleError("RAWR! Passwords cannot match!");
+        return false;
+    }
+
+    sendAjax('POST', $("#changeForm").attr("action"), $("#changeForm").serialize(), redirect);
+
+    return false;
+};
+
 const DomoForm = (props) => {
     return ( 
     <form id="domoForm"
@@ -32,6 +52,25 @@ const DomoForm = (props) => {
         <input id="domoAge" type="password" name="age" placeholder="Domo Age"/>
         <input type="hidden" name="_csrf" value={props.csrf}/>
         <input className="makeDomoSubmit" type="submit" value="Make Domo"/>
+
+    </form>
+    );
+};
+
+const ChangeWindow = (props) => {
+    return ( 
+    <form id="changeForm" name="changeForm"
+            onSubmit={handleChange}
+            action="/passChange"
+            method="POST"
+            className="mainForm"
+        >
+        <label htmlFor="pass">Password: </label>
+        <input id="pass" type="password" name="pass" placeholder="old password"/>
+        <label htmlFor="pass2">Password: </label>
+        <input id="pass2" type="password" name="pass2" placeholder="new password"/>
+        <input type="hidden" name="_csrf" value={props.csrf}/>
+        <input className="formSubmit" type="submit" value="Change Password"/>
 
     </form>
     );
@@ -71,7 +110,23 @@ const loadDomosFromServer = () => {
     });
 };
 
+const createPassChangeWindow = (csrf) => {
+    ReactDOM.render(
+        <ChangeWindow csrf={csrf} />,
+        document.querySelector("#content")
+    );
+};
+
 const setup = function(csrf) {
+
+    const passChangeButton = document.querySelector("#passChangeButton");
+
+    passChangeButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        createPassChangeWindow(csrf);
+        return false;
+    });
+
     ReactDOM.render(
         <DomoForm csrf={csrf}/>, document.querySelector("#makeDomo")
     );

@@ -18,6 +18,26 @@ var handleDomo = function handleDomo(e) {
   return false;
 };
 
+var handleChange = function handleChange(e) {
+  e.preventDefault();
+  $("#domoMessage").animate({
+    width: 'hide'
+  }, 350);
+
+  if ($("#user").val() == '' || $("#pass").val() == '' || $("#pass2").val() == '') {
+    handleError("RAWR! All fields are required!");
+    return false;
+  }
+
+  if ($("#pass").val() === $("#pass2").val()) {
+    handleError("RAWR! Passwords cannot match!");
+    return false;
+  }
+
+  sendAjax('POST', $("#changeForm").attr("action"), $("#changeForm").serialize(), redirect);
+  return false;
+};
+
 var DomoForm = function DomoForm(props) {
   return (/*#__PURE__*/React.createElement("form", {
       id: "domoForm",
@@ -48,6 +68,40 @@ var DomoForm = function DomoForm(props) {
       className: "makeDomoSubmit",
       type: "submit",
       value: "Make Domo"
+    }))
+  );
+};
+
+var ChangeWindow = function ChangeWindow(props) {
+  return (/*#__PURE__*/React.createElement("form", {
+      id: "changeForm",
+      name: "changeForm",
+      onSubmit: handleChange,
+      action: "/passChange",
+      method: "POST",
+      className: "mainForm"
+    }, /*#__PURE__*/React.createElement("label", {
+      htmlFor: "pass"
+    }, "Password: "), /*#__PURE__*/React.createElement("input", {
+      id: "pass",
+      type: "password",
+      name: "pass",
+      placeholder: "old password"
+    }), /*#__PURE__*/React.createElement("label", {
+      htmlFor: "pass2"
+    }, "Password: "), /*#__PURE__*/React.createElement("input", {
+      id: "pass2",
+      type: "password",
+      name: "pass2",
+      placeholder: "new password"
+    }), /*#__PURE__*/React.createElement("input", {
+      type: "hidden",
+      name: "_csrf",
+      value: props.csrf
+    }), /*#__PURE__*/React.createElement("input", {
+      className: "formSubmit",
+      type: "submit",
+      value: "Change Password"
     }))
   );
 };
@@ -91,7 +145,19 @@ var loadDomosFromServer = function loadDomosFromServer() {
   });
 };
 
+var createPassChangeWindow = function createPassChangeWindow(csrf) {
+  ReactDOM.render( /*#__PURE__*/React.createElement(ChangeWindow, {
+    csrf: csrf
+  }), document.querySelector("#content"));
+};
+
 var setup = function setup(csrf) {
+  var passChangeButton = document.querySelector("#passChangeButton");
+  passChangeButton.addEventListener("click", function (e) {
+    e.preventDefault();
+    createPassChangeWindow(csrf);
+    return false;
+  });
   ReactDOM.render( /*#__PURE__*/React.createElement(DomoForm, {
     csrf: csrf
   }), document.querySelector("#makeDomo"));

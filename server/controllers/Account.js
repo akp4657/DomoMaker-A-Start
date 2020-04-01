@@ -34,6 +34,39 @@ const login = (request, response) => {
   });
 };
 
+const passwordChange = (request, response) => {
+  const req = request;
+  const res = response;
+
+  const pass = `${req.body.pass}`;
+  const newPass = `${req.body.pass2}`;
+
+   if (!pass || !newPass) {
+    return res.status(400).json({ error: 'RAWR! All fields are required!' });
+  }
+
+  if (pass === newPass) {
+    return res.status(400).json({ error: 'RAWR! Passwords cannot be the same!' });
+  } 
+
+  // Check to see if the user actually exists
+  return Account.AccountModel.authenticate(req.session.account.username, pass, (err, account) => {
+    if (err || !account) {
+      return res.status(401).json({ error: 'This account does not exist' });
+    }
+
+    // If they do, make a new hash for it with the newPassword
+    return Account.AccountModel.generateHash(newPass, (salt, hash) => {
+      Account.AccountModel.updateOne({ 
+        username: username,
+        salt,
+        password: hash,
+      });
+        return res.json({ message: 'Password changed' });
+      });
+  });
+}
+
 const signup = (request, response) => {
   const req = request;
   const res = response;
@@ -41,7 +74,7 @@ const signup = (request, response) => {
   // Cas to strings to cover up some security flaws
   req.body.username = `${req.body.username}`;
   req.body.pass = `${req.body.pass}`;
-  req.body.pass = `${req.body.pass2}`;
+  req.body.pass2 = `${req.body.pass2}`;
 
   if (!req.body.username || !req.body.pass || !req.body.pass2) {
     return res.status(400).json({ error: 'RAWR! All fields are required!' });
@@ -95,3 +128,4 @@ module.exports.login = login;
 module.exports.logout = logout;
 module.exports.signup = signup;
 module.exports.getToken = getToken;
+module.exports.passwordChange = passwordChange;
