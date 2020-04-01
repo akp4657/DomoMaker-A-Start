@@ -34,34 +34,38 @@ const login = (request, response) => {
   });
 };
 
-const passwordChange = (request, response) => {
+// Password change that takes a lot from the signup function
+const passChange = (request, response) => {
   const req = request;
   const res = response;
 
-  const pass = `${req.body.pass}`;
-  const newPass = `${req.body.pass2}`;
+  req.body.username = `${req.body.username}`
+  req.body.pass = `${req.body.pass}`;
+  req.body.pass2 = `${req.body.pass2}`;
 
-   if (!pass || !newPass) {
+   if (!req.body.username || !req.body.pass || !req.body.pass2) {
     return res.status(400).json({ error: 'RAWR! All fields are required!' });
   }
 
-  if (pass === newPass) {
+  if (req.body.pass === req.body.pass2) {
     return res.status(400).json({ error: 'RAWR! Passwords cannot be the same!' });
   } 
 
   // Check to see if the user actually exists
-  return Account.AccountModel.authenticate(req.session.account.username, pass, (err, account) => {
+  return Account.AccountModel.authenticate(req.body.username, req.body.pass, (err, account) => {
     if (err || !account) {
       return res.status(401).json({ error: 'This account does not exist' });
     }
 
     // If they do, make a new hash for it with the newPassword
-    return Account.AccountModel.generateHash(newPass, (salt, hash) => {
-      Account.AccountModel.updateOne({ username: req.session.account.username, salt, password: hash,}, (error) => {
+    return Account.AccountModel.generateHash(req.body.pass2, (salt, hash) => {
+      // While making the hash, update the current password for this session's username since we require login anyway
+      // https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/
+      Account.AccountModel.updateOne({ username: req.session.account.username},{ salt, password: hash,}, (error) => {
         if(error) {
-          return res.status(400).json({ error });
+          return res.status(400).json({ error: 'There was an error' });
         }
-        return res.json({ message: 'Password changed' });
+        return res.json({ redirect: '/maker' });
       });
     });
   });
@@ -128,4 +132,4 @@ module.exports.login = login;
 module.exports.logout = logout;
 module.exports.signup = signup;
 module.exports.getToken = getToken;
-module.exports.passwordChange = passwordChange;
+module.exports.passChange = passChange;

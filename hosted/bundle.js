@@ -81,6 +81,13 @@ var ChangeWindow = function ChangeWindow(props) {
       method: "POST",
       className: "mainForm"
     }, /*#__PURE__*/React.createElement("label", {
+      htmlFor: "username"
+    }, "Username: "), /*#__PURE__*/React.createElement("input", {
+      id: "user",
+      type: "text",
+      name: "username",
+      placeholder: "username"
+    }), /*#__PURE__*/React.createElement("label", {
       htmlFor: "pass"
     }, "Password: "), /*#__PURE__*/React.createElement("input", {
       id: "pass",
