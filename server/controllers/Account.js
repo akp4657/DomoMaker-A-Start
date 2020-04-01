@@ -57,13 +57,13 @@ const passwordChange = (request, response) => {
 
     // If they do, make a new hash for it with the newPassword
     return Account.AccountModel.generateHash(newPass, (salt, hash) => {
-      Account.AccountModel.updateOne({ 
-        username: username,
-        salt,
-        password: hash,
-      });
+      Account.AccountModel.updateOne({ username: req.session.account.username, salt, password: hash,}, (error) => {
+        if(error) {
+          return res.status(400).json({ error });
+        }
         return res.json({ message: 'Password changed' });
       });
+    });
   });
 }
 
